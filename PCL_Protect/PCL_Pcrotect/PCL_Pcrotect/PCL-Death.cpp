@@ -8,7 +8,7 @@ using namespace cv;
 using namespace std;
 
 // 安全释放指针
-template<class Interface>
+template<class Inter/face>
 inline void SafeRelease(Interface *& pInterfaceToRelease)
 {
 	if (pInterfaceToRelease != NULL)

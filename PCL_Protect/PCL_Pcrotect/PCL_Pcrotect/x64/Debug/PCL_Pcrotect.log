@@ -1,2 +1,12 @@
 ﻿  PCL-Death.cpp
-  PCL_Pcrotect.vcxproj -> S:\PCL\PCL_Kinect\PCL_Protect\PCL_Pcrotect\x64\Debug\PCL_Pcrotect.exe
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(11): error C2993: “Inter”: 非类型模板参数“Inter”的类型非法
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(11): error C2059: 语法错误:“/”
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(13): error C2143: 语法错误: 缺少“;”(在“{”的前面)
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(13): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(220): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(221): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(222): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(223): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(224): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(225): error C3861: “SafeRelease”: 找不到标识符
+s:\pcl\pcl_kinect\pcl_protect\pcl_pcrotect\pcl_pcrotect\pcl-death.cpp(226): error C3861: “SafeRelease”: 找不到标识符
