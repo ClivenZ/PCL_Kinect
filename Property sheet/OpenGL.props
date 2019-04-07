@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>S:\PCL\PCL_Kinect\OpenGL\GLFW\glfw-3.2.1.bin.WIN64\glfw-3.2.1.bin.WIN64\include;S:\PCL\PCL_Kinect\OpenGL\GLEW\glew-2.1.0-win32\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>S:\PCL\PCL_Kinect\OpenGL\GLFW\glfw-3.2.1.bin.WIN64\glfw-3.2.1.bin.WIN64\lib-vc2015;S:\PCL\PCL_Kinect\OpenGL\GLEW\glew-2.1.0-win32\glew-2.1.0\lib;S:\PCL\PCL_Kinect\OpenGL\GLEW\glew-2.1.0-win32\glew-2.1.0\lib\Release\x64;$(LibraryPath)</LibraryPath>
+    <_PropertySheetDisplayName>OpenGL</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
