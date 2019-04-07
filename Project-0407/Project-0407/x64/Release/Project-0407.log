@@ -1,0 +1,3 @@
+﻿  test.cpp
+test.obj : error LNK2001: 无法解析的外部符号 "void __cdecl cv::imshow(class cv::String const &,class cv::_InputArray const &)" (?imshow@cv@@YAXAEBVString@1@AEBV_InputArray@1@@Z)
+S:\PCL\PCL_Kinect\Project-0407\x64\Release\Project-0407.exe : fatal error LNK1120: 1 个无法解析的外部命令
