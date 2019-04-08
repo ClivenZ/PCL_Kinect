@@ -6,6 +6,10 @@
     <IncludePath>C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\inc;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>kinect20.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
