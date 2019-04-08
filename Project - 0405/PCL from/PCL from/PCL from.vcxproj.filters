@@ -23,8 +23,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PCL from Kinect V2.0 .cpp">
+    <ClCompile Include="源.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="za.txt">
+      <Filter>头文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>

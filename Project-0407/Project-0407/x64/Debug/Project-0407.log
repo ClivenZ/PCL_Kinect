@@ -1,3 +1,7 @@
-﻿  PCL from Kinect V2.0 .cpp
+﻿  PCL可视化.cpp
 e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\point_traits.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-  Project-0407.vcxproj -> S:\PCL\PCL_Kinect\Project-0407\x64\Debug\Project-0407.exe
+e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\visualization\interactor_style.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\visualization\pcl_visualizer.h(1609): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+PCL可视化.obj : error LNK2019: 无法解析的外部符号 "void __cdecl vtkPolyDataMapper_AutoInit_Construct(void)" (?vtkPolyDataMapper_AutoInit_Construct@@YAXXZ)，该符号在函数 "public: __cdecl vtkPolyDataMapper_ModuleInit::vtkPolyDataMapper_ModuleInit(void)" (??0vtkPolyDataMapper_ModuleInit@@QEAA@XZ) 中被引用
+PCL可视化.obj : error LNK2019: 无法解析的外部符号 "void __cdecl vtkPolyDataMapper_AutoInit_Destruct(void)" (?vtkPolyDataMapper_AutoInit_Destruct@@YAXXZ)，该符号在函数 "public: __cdecl vtkPolyDataMapper_ModuleInit::~vtkPolyDataMapper_ModuleInit(void)" (??1vtkPolyDataMapper_ModuleInit@@QEAA@XZ) 中被引用
+S:\PCL\PCL_Kinect\Project-0407\x64\Debug\Project-0407.exe : fatal error LNK1120: 2 个无法解析的外部命令

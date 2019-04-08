@@ -13,6 +13,10 @@
 //pcl 点类型
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+//pcl 可视化窗类
+#include <pcl/visualization/cloud_viewer.h>
+
+#include <GLFW/glfw3.h>
 
 using namespace cv;
 using namespace std;
@@ -61,7 +65,7 @@ void pcl_init() {
 	int rowNumber = color.rows;
 	int colNumber = color.cols;
 
-	pcl::PointCloud<pcl::PointXYZRGB> cloud;
+	pcl::PointCloud<pcl::PointXYZRGBA> cloud;
 
 	cloud.height = rowNumber;
 	cloud.width = colNumber;
@@ -210,9 +214,11 @@ int main()
 				break;
 			imwrite("Depth.jpg", i_src_depth);
 			imwrite("GDB.jpg", i_rgb_resize);
+			
 			pcl_init();
 
-			//Sleep(10000);
+			
+			//printf("程序运行完毕\n");
 			//break;
 		}
 	}
