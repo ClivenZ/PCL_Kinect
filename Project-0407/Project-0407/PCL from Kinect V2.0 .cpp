@@ -13,8 +13,8 @@
 //pcl 点类型
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-//pcl 可视化窗类
-#include <pcl/visualization/cloud_viewer.h>
+////pcl 可视化窗类
+//#include <pcl/visualization/cloud_viewer.h>
 
 #include <GLFW/glfw3.h>
 
@@ -93,7 +93,7 @@ void pcl_init() {
 	}
 
 	/**cloud = cloud;*/
-	pcl::io::savePCDFile("colorImage.pcd", cloud);
+	pcl::io::savePCDFile("MyPCL.pcd", cloud);
 	/*pcl::visualization::CloudViewer viewer("Cloud Viewer");
 
 	viewer.showCloud(cloud);
@@ -148,6 +148,8 @@ int main()
 	Mat i_src_depth(424, 512, CV_16UC1);
 
 	UINT16 *depthData = new UINT16[424 * 512];
+	CameraSpacePoint* m_pCameraCoordinates = new CameraSpacePoint[512 * 424];
+	ColorSpacePoint* m_pColorCoordinates = new ColorSpacePoint[512 * 424];
 	IMultiSourceFrame* m_pMultiFrame = nullptr;
 	while (true)
 	{
@@ -181,47 +183,78 @@ int main()
 			hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, depthData);
 			//for (int i = 0; i < 512 * 424; i++)
 			//{
-			//  // 0-255深度图，为了显示明显，只取深度数据的低8位
-			//  BYTE intensity = static_cast<BYTE>(depthData[i] % 256);
-			//  reinterpret_cast<BYTE*>(i_depth.data)[i] = intensity;
+			//	// 0-255深度图，为了显示明显，只取深度数据的低8位
+			//	UINT16 intensity = static_cast<UINT16>(depthData[i]);
+			//	reinterpret_cast<UINT16*>(i_depth.data)[i] = intensity;
 			//}
 
-			// 实际是16位unsigned int数据
-			hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, reinterpret_cast<UINT16*>(i_src_depth.data));
+			 /*实际是16位unsigned int数据*/
+			hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, reinterpret_cast<UINT16*>(i_depth.data));
 		}
 
 
-		//Mat i_rgb_resize = i_rgb.clone();       // 缩小方便看
-		//cv::resize(i_rgb_resize, i_rgb_resize, Size(512, 424));
-		////// 显示
-		//cv::imshow("rgb", i_rgb_resize);
-		//if (waitKey(1) == VK_ESCAPE)
-		//	break;
-		//cv::imshow("i_src_depth", i_src_depth);
-		//if (waitKey(1) == VK_ESCAPE)
-		//	break;
+		Mat i_rgb_resize = i_rgb.clone();       // 缩小方便看
+		cv::resize(i_rgb_resize, i_rgb_resize, Size(512, 424));
+		//// 显示
+		cv::imshow("rgb", i_rgb_resize);
+		if (waitKey(1) == VK_ESCAPE)
+			break;
+		cv::imshow("i_src_depth", i_src_depth);
+		if (waitKey(1) == VK_ESCAPE)
+			break;
 		
 		if (waitKey(100))
 		{
-			Mat i_rgb_resize = i_rgb.clone();       // 缩小方便看
-			cv::resize(i_rgb_resize, i_rgb_resize, Size(512, 424));
-			//// 显示
-			cv::imshow("rgb", i_rgb_resize);
-			if (waitKey(1) == VK_ESCAPE)
-				break;
-			cv::imshow("i_src_depth", i_src_depth);
-			if (waitKey(1) == VK_ESCAPE)
-				break;
+			//Mat i_rgb_resize = i_rgb.clone();       // 缩小方便看
+			//cv::resize(i_rgb_resize, i_rgb_resize, Size(512, 424));
+			////// 显示
+			//cv::imshow("rgb", i_rgb_resize);
+
+			//if (waitKey(1) == VK_ESCAPE)
+			//	break;
+			//cv::imshow("i_src_depth", i_src_depth);
+			//if (waitKey(1) == VK_ESCAPE)
+			//	break;
 			imwrite("Depth.jpg", i_src_depth);
 			imwrite("GDB.jpg", i_rgb_resize);
 			
-			pcl_init();
-
 			
-			//printf("程序运行完毕\n");
-			//break;
+/*
+			Mat i_depthToRgb(424, 512, CV_8UC4);
+			if (SUCCEEDED(hr))
+			{
+				for (int i = 0; i < 424 * 512; i++)
+				{
+					ColorSpacePoint p = m_pColorCoordinates[i];
+					if (p.X != -std::numeric_limits<float>::infinity() && p.Y != -std::numeric_limits<float>::infinity())
+					{
+						int colorX = static_cast<int>(p.X + 0.5f);
+						int colorY = static_cast<int>(p.Y + 0.5f);
+
+						if ((colorX >= 0 && colorX < 1920) && (colorY >= 0 && colorY < 1080))
+						{
+							i_depthToRgb.data[i * 4] = i_rgb.data[(colorY * 1920 + colorX) * 4];
+							i_depthToRgb.data[i * 4 + 1] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 1];
+							i_depthToRgb.data[i * 4 + 2] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 2];
+							i_depthToRgb.data[i * 4 + 3] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 3];
+						}
+					}
+				}
+			}
+			imshow("rgb2depth", i_depthToRgb);
+			if (waitKey(1) == VK_ESCAPE)
+				break;*/
+
+
+			pcl_init();
+			
+			/*printf("程序运行完毕\n");
+			break;*/
 		}
 	}
+
+	
+
 	// 释放资源
 	SafeRelease(m_pColorFrame);
 	SafeRelease(m_pDepthFrame);

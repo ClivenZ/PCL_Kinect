@@ -23,7 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PCL from Kinect V2.0 .cpp">
+    <ClCompile Include="PCL可视化.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
