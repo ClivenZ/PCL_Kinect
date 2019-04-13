@@ -1,0 +1,305 @@
+//Kinect 相机库函数
+#include "kinect.h"
+//C++ 标准IO库
+#include <iostream>
+//Opencv coro库 highgui库
+#include <opencv2/core/core.hpp>  
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp> 
+//pcl io库
+#include <pcl/io/io.h>
+//pcl io库 读写.pcd 文件
+#include <pcl/io/pcd_io.h>
+//pcl 点类型
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+////pcl 可视化窗类
+//#include <pcl/visualization/cloud_viewer.h>
+
+#include <GLFW/glfw3.h>
+
+using namespace cv;
+using namespace std;
+using namespace pcl;
+
+
+// 相机内参(还需要进行大量修改！！！！)
+const double camera_factor = 1000;
+const double camera_cx = 325.5;
+const double camera_cy = 253.5;
+const double camera_fx = 518.0;
+const double camera_fy = 519.0;
+
+
+// 安全释放指针
+template<class Interface>
+inline void SafeRelease(Interface *& pInterfaceToRelease)
+{
+	if (pInterfaceToRelease != NULL)
+	{
+		pInterfaceToRelease->Release();
+		pInterfaceToRelease = NULL;
+	}
+}
+
+
+
+void pcl_init() {
+	cv::Mat color = cv::imread("GDB.jpg");
+	cv::Mat depth = cv::imread("Depth.jpg");
+
+	int rowNumber = color.rows;
+	int colNumber = color.cols;
+
+	pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+
+	cloud.height = rowNumber;
+	cloud.width = colNumber;
+	cloud.points.resize(cloud.width * cloud.height);
+
+	for (unsigned int u = 0; u < rowNumber; ++u)
+	{
+		for (unsigned int v = 0; v < colNumber; ++v)
+		{
+			unsigned int num = u * colNumber + v;
+			double Xw = 0, Yw = 0, Zw = 0;
+
+			Zw = ((double)depth.at<uchar>(u, v)) / 255.0 * 10001.0;
+			Xw = (u - camera_cx) * Zw / camera_fx;
+			Yw = (v - camera_cy) * Zw / camera_fy;
+
+			cloud.points[num].b = color.at<cv::Vec3b>(u, v)[0];
+			cloud.points[num].g = color.at<cv::Vec3b>(u, v)[1];
+			cloud.points[num].r = color.at<cv::Vec3b>(u, v)[2];
+
+			cloud.points[num].x = Xw;
+			cloud.points[num].y = Yw;
+			cloud.points[num].z = Zw;
+		}
+	}
+
+	/**cloud = cloud;*/
+	pcl::io::savePCDFile("MyPCL.pcd", cloud);
+	/*pcl::visualization::CloudViewer viewer("Cloud Viewer");
+
+	viewer.showCloud(cloud);
+
+	viewer.runOnVisualizationThreadOnce(viewerOneOff);
+
+	while (!viewer.wasStopped())
+	{
+		user_data = 9;
+	}*/
+	printf("点云生成完毕\n");
+}
+
+
+
+int main()
+{
+	//相机内参
+	Eigen::Matrix3d intricRGB;
+	intricRGB << 1094.75283, 0, 942.00992,
+		0, 1087.37528, 530.35240,
+		0, 0, 1;
+	Eigen::Matrix3d intricDepth;
+	intricDepth << camera_fx, 0, camera_cx,
+		0, camera_fy, camera_cy,
+		0, 0, 1;
+	Eigen::Matrix3d intricdepth2RGB;
+	intricdepth2RGB = intricRGB * intricDepth.inverse();
+	
+	// 获取Kinect设备
+	IKinectSensor* m_pKinectSensor;
+	HRESULT hr;
+	hr = GetDefaultKinectSensor(&m_pKinectSensor);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	IMultiSourceFrameReader* m_pMultiFrameReader;
+	IMultiSourceFrameReader* m_pDepthFrameReader;
+	IMultiSourceFrameReader* m_pColorFrameReader;
+
+	if (m_pKinectSensor)
+	{
+		hr = m_pKinectSensor->Open();
+		if (SUCCEEDED(hr))
+		{
+			// 获取多数据源到读取器  
+			hr = m_pKinectSensor->OpenMultiSourceFrameReader(
+				FrameSourceTypes::FrameSourceTypes_Color |
+				FrameSourceTypes::FrameSourceTypes_Infrared |
+				FrameSourceTypes::FrameSourceTypes_Depth,
+				&m_pMultiFrameReader);
+		}
+	}
+
+	if (!m_pKinectSensor || FAILED(hr))
+	{
+		return E_FAIL;
+	}
+	// 三个数据帧及引用
+	IDepthFrameReference* m_pDepthFrameReference = nullptr;
+	IColorFrameReference* m_pColorFrameReference = nullptr;
+	IDepthFrame* m_pDepthFrame = nullptr;
+	IColorFrame* m_pColorFrame = nullptr;
+
+
+	DepthSpacePoint* m_pDepthCoordinates = NULL;
+	ColorSpacePoint* m_pColorCoordinates = NULL;
+	CameraSpacePoint* m_pCameraCoordinates = NULL;
+
+
+	// 三个图片格式
+	Mat i_rgb(1080, 1920, CV_8UC4);      //注意：这里必须为4通道的图，Kinect的数据只能以Bgra格式传出
+	Mat i_depth(424, 512, CV_8UC1);
+	Mat i_src_depth(424, 512, CV_16UC1);
+	Mat result(424, 512, CV_8UC4);
+
+	UINT16 *depthData = new UINT16[424 * 512];
+	IMultiSourceFrame* m_pMultiFrame = nullptr;
+	while (true)
+	{
+		// 获取新的一个多源数据帧
+		hr = m_pMultiFrameReader->AcquireLatestFrame(&m_pMultiFrame);
+		if (FAILED(hr) || !m_pMultiFrame)
+		{
+			//cout << "!!!" << endl;
+			continue;
+		}
+
+		// 从多源数据帧中分离出彩色数据，深度数据和红外数据
+		if (SUCCEEDED(hr))
+			hr = m_pMultiFrame->get_ColorFrameReference(&m_pColorFrameReference);
+		if (SUCCEEDED(hr))
+			hr = m_pColorFrameReference->AcquireFrame(&m_pColorFrame);
+		if (SUCCEEDED(hr))
+			hr = m_pMultiFrame->get_DepthFrameReference(&m_pDepthFrameReference);
+		if (SUCCEEDED(hr))
+			hr = m_pDepthFrameReference->AcquireFrame(&m_pDepthFrame);
+
+
+		// color拷贝到图片中
+		UINT nColorBufferSize = 1920 * 1080 * 4;
+		if (SUCCEEDED(hr))
+			hr = m_pColorFrame->CopyConvertedFrameDataToArray(nColorBufferSize, reinterpret_cast<BYTE*>(i_rgb.data), ColorImageFormat::ColorImageFormat_Bgra);
+
+		// depth拷贝到图片中
+		if (SUCCEEDED(hr))
+		{
+			hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, depthData);
+			for (int i = 0; i < 512 * 424; i++)
+			{
+				// 0-255深度图，为了显示明显，只取深度数据的低8位
+				UINT16 intensity = static_cast<UINT16>(depthData[i]);
+				reinterpret_cast<UINT16*>(i_depth.data)[i] = intensity;
+			}
+
+			// 实际是16位unsigned int数据
+			//hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, reinterpret_cast<UINT16*>(i_depth.data));
+		}
+		
+		
+		//获得深度帧和彩色帧
+		hr = m_pDepthFrameReader->AcquireLatestFrame(&m_pDepthFrame);
+		hr = m_pDepthFrameReader->AcquireLatestFrame(&m_pColorFrame);
+
+		//保存深度数据和颜色数据到数组
+		UINT16 *depthData = new UINT16[424 * 512];
+		hr = m_pDepthFrame->CopyFrameDataToArray(424 * 512, depthData);
+
+		Mat i_rgb(1080, 1920, CV_8UC4);
+		nColorBufferSize = 1920 * 1080 * 4;
+		if (SUCCEEDED(hr))
+			hr = m_pColorFrame->CopyConvertedFrameDataToArray(nColorBufferSize, i_rgb.data, ColorImageFormat::ColorImageFormat_Bgra);
+		
+		
+		//获得坐标映射器
+		ICoordinateMapper*      m_pCoordinateMapper;
+		hr = m_pKinectSensor->get_CoordinateMapper(&m_pCoordinateMapper);
+		ColorSpacePoint* m_pColorCoordinates = new ColorSpacePoint[512 * 424];
+		
+		
+		//深度图映射到彩色图
+		HRESULT hr = m_pCoordinateMapper->MapDepthFrameToColorSpace(512 * 424, depthData, 512 * 424, m_pColorCoordinates);
+		Mat i_depthToRgb(424, 512, CV_8UC4);
+		if (SUCCEEDED(hr))
+		{
+			for (int i = 0; i < 424 * 512; i++)
+			{
+				ColorSpacePoint p = m_pColorCoordinates[i];
+				if (p.X != -std::numeric_limits<float>::infinity() && p.Y != -std::numeric_limits<float>::infinity())
+				{
+					int colorX = static_cast<int>(p.X + 0.5f);
+					int colorY = static_cast<int>(p.Y + 0.5f);
+
+					if ((colorX >= 0 && colorX < 1920) && (colorY >= 0 && colorY < 1080))
+					{
+						i_depthToRgb.data[i * 4] = i_rgb.data[(colorY * 1920 + colorX) * 4];
+						i_depthToRgb.data[i * 4 + 1] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 1];
+						i_depthToRgb.data[i * 4 + 2] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 2];
+						i_depthToRgb.data[i * 4 + 3] = i_rgb.data[(colorY * 1920 + colorX) * 4 + 3];
+					}
+				}
+			}
+		}
+		//深度图映射到相机空间
+		if (SUCCEEDED(hr))
+		{
+			HRESULT hr = m_pCoordinateMapper->MapDepthFrameToCameraSpace(512 * 424, depthData, 512 * 424, m_pCameraCoordinates);
+		}
+		//OpenGL显示
+		if (SUCCEEDED(hr))
+		{
+			for (int i = 0; i < 512 * 424; i++)
+			{
+				CameraSpacePoint p = m_pCameraCoordinates[i];
+				if (p.X != -std::numeric_limits<float>::infinity() && p.Y != -std::numeric_limits<float>::infinity() && p.Z != -std::numeric_limits<float>::infinity())
+				{
+					float cameraX = static_cast<float>(p.X);
+					float cameraY = static_cast<float>(p.Y);
+					float cameraZ = static_cast<float>(p.Z);
+
+					//cout << "x: " << cameraX << "y: " << cameraY << "z: " << cameraZ << endl;
+					GLubyte *rgb = new GLubyte();
+					rgb[2] = result.data[i * 4 + 0];
+					rgb[1] = result.data[i * 4 + 1];
+					rgb[0] = result.data[i * 4 + 2];
+					// 显示点
+					glColor3ubv(rgb);
+					glVertex3f(cameraX, -cameraY, cameraZ);
+				}
+			}
+		}
+		/*if (waitKey(1) == VK_ESCAPE)
+			break;
+		imshow("mosic", result);
+		if (waitKey(1) == VK_ESCAPE)
+			break;*/
+
+
+		//Mat i_rgb_resize = i_rgb.clone();       // 缩小方便看
+		//cv::resize(i_rgb_resize, i_rgb_resize, Size(512, 424));
+		//// 显示
+		//imshow("rgb", i_rgb_resize);
+		//if (waitKey(1) == VK_ESCAPE)
+		//	break;
+		//imshow("i_src_depth", i_src_depth);
+		//if (waitKey(1) == VK_ESCAPE)
+		//	break;
+
+		// 释放资源
+		SafeRelease(m_pColorFrame);
+		SafeRelease(m_pDepthFrame);
+		SafeRelease(m_pColorFrameReference);
+		SafeRelease(m_pDepthFrameReference);
+		SafeRelease(m_pMultiFrame);
+	}
+	// 关闭窗口，设备
+	cv::destroyAllWindows();
+	m_pKinectSensor->Close();
+	std::system("pause");
+	return 0;
+}
