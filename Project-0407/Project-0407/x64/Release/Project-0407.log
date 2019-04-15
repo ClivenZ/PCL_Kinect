@@ -1,1 +1,6 @@
-﻿  Project-0407.vcxproj -> S:\PCL\PCL_Kinect\Project-0407\x64\Release\Project-0407.exe
+﻿  QIN1.cpp
+e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\point_traits.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\visualization\interactor_style.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+e:\pcl\pcl 1.9.1\include\pcl-1.9\pcl\visualization\pcl_visualizer.h(1609): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+QIN1.obj : error LNK2001: 无法解析的外部符号 "bool __cdecl cv::imwrite(class cv::String const &,class cv::_InputArray const &,class std::vector<int,class std::allocator<int> > const &)" (?imwrite@cv@@YA_NAEBVString@1@AEBV_InputArray@1@AEBV?$vector@HV?$allocator@H@std@@@std@@@Z)
+S:\PCL\PCL_Kinect\Project-0407\x64\Release\Project-0407.exe : fatal error LNK1120: 1 个无法解析的外部命令
